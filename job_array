@@ -1,0 +1,132 @@
+#!/bin/bash
+#SBATCH --job-name=FP_arrayjob
+#SBATCH --ntasks=1
+#SBATCH --mem=4gb
+#SBATCH --time=00:25:00
+#SBATCH --output=Logs/array_job_%A_%a.log
+#SBATCH --array=1-12
+
+JOBID=third_test_run
+YEAR=2019
+ALT=10
+echo Beginning FLEXPART v10.4 array job
+echo Array job $SLURM_ARRAY_TASK_ID of OSCA campaign in $YEAR
+
+YEAR1=$(( $YEAR + 1 ))
+YEAR_1=$(( $YEAR - 1 ))
+if [ ! -d $JOBID ]; then
+    mkdir $JOBID
+    python ./python_scripts/mkAVAIL.py -s $YEAR_1'01' -e $YEAR1'01' -m GFS -p  /users/mjr583/scratch/flexpart/preprocess/flex_extract/05x05/ -a ./$JOBID/
+    mv array_dates_$JOBID $JOBID/
+    cd $JOBID
+    mkdir netcdfs
+else
+    echo Sleeping
+    sleep 20s
+    cd $JOBID
+fi
+
+dates_file_path='array_dates_'$JOBID
+DATE_STRING=$(sed -n "${SLURM_ARRAY_TASK_ID}p" ${dates_file_path})
+echo $DATE_STRING
+echo Get name and extract information
+JOBEND=${DATE_STRING::12}
+JOB=${DATE_STRING:13}
+echo $JOB
+echo $JOBEND
+
+echo Create necessary directories and copy files over
+echo flex_$JOB
+if [ ! -d flex_$JOB ]; then
+  mkdir flex_$JOB
+  mkdir flex_$JOB/src
+  mkdir flex_$JOB/options
+  mkdir flex_$JOB/output
+fi 
+
+ln -s ../../pathnames flex_$JOB/
+ln -s ../AVAILABLE flex_$JOB/
+cp -r ../options/* flex_$JOB/options/
+ln -s ../../../src/FLEXPART flex_$JOB/src/
+
+cd flex_$JOB
+## COMMAND FILE
+DIR=-1
+STARTDATE=${JOBEND::8}
+ENDDATE=${JOB::8}
+STARTTIME=${JOBEND:8}'00'
+ENDTIME=${JOB:8}'00'
+OUTTYPE=1 ## 1=mass, 2=pptv, 3=1&2, 4=plume, 5=1&5 (+8 for ncdf)
+OUTTIME=10800
+
+echo CHECK HERE
+echo $STARTDATE $STARTTIME
+echo $ENDDATE $ENDTIME
+
+## RELEASES FILE
+RELSTART=$ENDDATE
+RELEND=$ENDDATE
+RELTIMESTART=$ENDTIME
+RELTIMEEND=$ENDTIME
+LLLON=-24.9
+LLLAT=16.9
+URLON=$LLLON
+URLAT=$LLLAT
+HEIGHT=$ALT
+NAME='"FLEXPART back-trajectory"'
+NPARTICLES=1001
+
+## OUTGRID FILE
+OLON=-179.00
+OLAT=-90.00
+NX=360
+NY=180
+DX=1.00
+DY=1.00
+
+#echo Edit pathnames file
+#sed -i "s/.\/preprocess\/flex_extract\/work/\/users\/mjr583\/scratch\/flexpart\/preprocess\/flex_extract\/05x05/" pathnames
+## Set variables in COMMAND and RELEASES files
+sed -i "s/LDIRECT=.*/LDIRECT=              $DIR,/" ./options/COMMAND
+sed -i "s/IBDATE=.*/IBDATE=         $STARTDATE,/" ./options/COMMAND
+sed -i "s/IBTIME=.*/IBTIME=           $STARTTIME,/" ./options/COMMAND
+sed -i "s/IEDATE=.*/IEDATE=         $ENDDATE,/" ./options/COMMAND
+sed -i "s/IETIME=.*/IETIME=           $ENDTIME,/" ./options/COMMAND
+sed -i "s/IOUT=.*/IOUT=                 $OUTTYPE,/" ./options/COMMAND
+sed -i "s/LOUTSTEP=.*/LOUTSTEP=           $OUTTIME,/" ./options/COMMAND
+sed -i "s/LOUTAVER=.*/LOUTAVER=           $OUTTIME,/" ./options/COMMAND
+
+sed -i "s/IDATE1.*/IDATE1  =       $RELSTART,/" ./options/RELEASES
+sed -i "s/ITIME1.*/ITIME1  =         $RELTIMESTART,/" ./options/RELEASES
+sed -i "s/IDATE2.*/IDATE2  =       $RELEND,/" ./options/RELEASES
+sed -i "s/ITIME2.*/ITIME2  =         $RELTIMEEND,/" ./options/RELEASES
+sed -i "s/LON1.*/LON1    =         $LLLON,/" ./options/RELEASES
+sed -i "s/LON2.*/LON2    =         $URLON,/" ./options/RELEASES
+sed -i "s/LAT1.*/LAT1    =          $LLLAT,/" ./options/RELEASES
+sed -i "s/LAT2.*/LAT2    =          $URLAT,/" ./options/RELEASES
+sed -i "s/Z1.*/Z1      =             $HEIGHT,/" ./options/RELEASES
+sed -i "s/Z2.*/Z2      =             $HEIGHT,/" ./options/RELEASES
+sed -i "s/COMMENT.*/COMMENT =  $NAME,/" ./options/RELEASES
+sed -i "s/PARTS.*/PARTS   =           $NPARTICLES,/" ./options/RELEASES
+
+sed -i "s/OUTLON0=.*/OUTLON0=   $OLON,/" ./options/OUTGRID
+sed -i "s/OUTLAT0=.*/OUTLAT0=    $OLAT,/" ./options/OUTGRID
+sed -i "s/NUMXGRID=.*/NUMXGRID=      $NX,/" ./options/OUTGRID
+sed -i "s/NUMYGRID=.*/NUMYGRID=      $NY,/" ./options/OUTGRID
+sed -i "s/DXOUT=.*/DXOUT=        $DX,/" ./options/OUTGRID
+sed -i "s/DYOUT=.*/DYOUT=        $DY,/" ./options/OUTGRID
+
+echo Load ecCodes and run FLEXPART job
+module load tools/ecCodes/2.7.3-foss-2018b
+./src/FLEXPART
+#rm output/grid_time*
+#rm output/factor_drygrid
+#rm output/header
+
+echo Write all output as netcdfs
+cd ../../
+python python_scripts/convert_to_netcdf.py $SLURM_ARRAY_TASK_ID $JOBID
+
+rm -rf $JOBID/flex_$JOB
+
+echo all done

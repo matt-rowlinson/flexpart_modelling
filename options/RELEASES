@@ -1,0 +1,30 @@
+***************************************************************************************************************
+*                                                                                                             *
+*                                                                                                             *
+*                                                                                                             *
+*   Input file for the Lagrangian particle dispersion model FLEXPART                                          *
+*                        Please select your options                                                           *
+*                                                                                                             *
+*                                                                                                             *
+*                                                                                                             *
+***************************************************************************************************************
+&RELEASES_CTRL
+ NSPEC      =           1, ! Total number of species
+ SPECNUM_REL=          24, ! Species numbers in directory SPECIES
+ /
+&RELEASE                   ! For each release 
+ IDATE1  =       20200328,
+ ITIME1  =         000000,
+ IDATE2  =       20200328,
+ ITIME2  =         000000,
+ LON1    =      -0.141126,
+ LON2    =       0.074843,
+ LAT1    =      51.496262,
+ LAT2    =      51.519347,
+ Z1      =             500.,
+ Z2      =             500.,
+ ZKIND   =              1, ! Reference level 1=above ground, 2=above sea level, 3 for pressure in hPa
+ MASS    =       1.0000E0, ! Total mass emitted, only relevant for fwd simulations
+ PARTS   =           1001,
+ COMMENT =  "10-day back trajectory",
+ /

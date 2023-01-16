@@ -1,0 +1,20 @@
+Submitted batch job 21347221
+
+============================
+ Job utilisation efficiency
+============================
+
+Job ID: 21347182
+Cluster: viking
+User/Group: mjr583/clusterusers
+State: COMPLETED (exit code 0)
+Cores: 1
+CPU Utilized: 00:00:01
+CPU Efficiency: 50.00% of 00:00:02 core-walltime
+Job Wall-clock time: 00:00:02
+Memory Utilized: 1.00 MB
+Memory Efficiency: 0.20% of 500.00 MB
+ Requested wall clock time: 00:01:00
+    Actual wall clock time: 00:00:02
+Wall clock time efficiency: 3.3%
+           Job queued time: 00:00:11

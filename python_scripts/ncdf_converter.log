@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/var/spool/slurmdspool/job7038305/slurm_script", line 30, in <module>
+    datesin=path+YEAR+'/array_dates'
+TypeError: can only concatenate str (not "int") to str
+
+============================
+ Job utilisation efficiency
+============================
+
+Job ID: 7038305
+Cluster: viking
+User/Group: mjr583/clusterusers
+State: FAILED (exit code 1)
+Cores: 1
+CPU Utilized: 00:00:02
+CPU Efficiency: 6.25% of 00:00:32 core-walltime
+Job Wall-clock time: 00:00:32
+Memory Utilized: 110.43 MB
+Memory Efficiency: 5.39% of 2.00 GB
+ Requested wall clock time: 03:00:00
+    Actual wall clock time: 00:00:32
+Wall clock time efficiency: 0.3%
+           Job queued time: 02:02:04
