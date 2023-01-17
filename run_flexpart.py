@@ -50,14 +50,14 @@ def find_njobs(start, end):
 ##------------------------------------------------ MAIN SCRIPT ----------------------------------------------------##
 def main():
     # Select dates to run FLEXPART trajectories in format "YYYY-MM-DD (end date is inclusive)
-    start_date = '2019-11-01'
-    end_date   = '2019-11-03'
+    start_date = '2018-01-01'
+    end_date   = '2019-12-31'
     njobs      = find_njobs( start_date, end_date )
-    job_id     = 'third_test_run'
+    job_id     = 'hateruma_large'
     
     # Set coordinates of particles to be released
-    lon_of_release = -24.9
-    lat_of_release = 16.9
+    lon_of_release = 123.75
+    lat_of_release = 24.06
     alt_of_release = 10
     n_particles    = 1001
     coords=[lon_of_release,lat_of_release,alt_of_release]
