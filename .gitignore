@@ -1,3 +1,10 @@
 */flex_*
-Logs
-array_dates*
+*/AVAILABLE
+*/array_dates
+*.nc
+*.png
+*.csv
+output/
+Logs/
+array_date*
+plots/*

@@ -49,25 +49,29 @@ def find_njobs(start, end, frequency=6):
 
 ##------------------------------------------------ MAIN SCRIPT ----------------------------------------------------##
 def main():
-    # Select dates to run FLEXPART trajectories in format "YYYY-MM-DD (end date is inclusive)
-    start_date = '2019-12-11'
-    end_date   = '2019-12-11'
-    frequency  = 1
-    njobs      = find_njobs( start_date, end_date, frequency )
-    job_id     = 'MOSAiC_2'
-    print( njobs )
+    df = pd.read_csv('MOSAiC_LatLong.csv', index_col=0)
     
-    # Set coordinates of particles to be released
-    lon_of_release = 120.73395
-    lat_of_release = 86.57413
-    alt_of_release = 10
-    n_particles    = 1001
-    coords=[lon_of_release,lat_of_release,alt_of_release]
-    
-    # Setup config files and submit FLEXPART run
-    write_dates(start_date, end_date, job_id, hour_interval=frequency)
-    setup_flexpart_run( job_id, njobs, start_date, coords, n_particles )
-    submit_flexpart_run()
+    for n, (i, row) in enumerate(df.iterrows()):
+        if n!=10:
+            continue
+        # Read dates and lat/lon to run FLEXPART trajectories for MOSAiC - in format "YYYY-MM-DD (end date is inclusive)
+        start_date = pd.to_datetime( i, format='%d/%m/%Y %H:%M').strftime("%Y-%m-%d")
+        end_date   = start_date
+        frequency  = 1
+        njobs      = find_njobs( start_date, end_date, frequency )
+        job_id     = f'MOSAiC_{n+1}'
+        
+        # Set coordinates of particles to be released
+        lon_of_release = row.Longitude
+        lat_of_release = row.Latitude
+        alt_of_release = 10
+        n_particles    = 1001
+        coords=[lon_of_release,lat_of_release,alt_of_release]
+        
+        # Setup config files and submit FLEXPART run
+        write_dates(start_date, end_date, job_id, hour_interval=frequency)
+        setup_flexpart_run( job_id, njobs, start_date, coords, n_particles )
+        submit_flexpart_run()
 
 if __name__=="__main__":
     main()

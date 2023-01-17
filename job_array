@@ -4,10 +4,10 @@
 #SBATCH --mem=4gb
 #SBATCH --time=00:25:00
 #SBATCH --output=Logs/array_job_%A_%a.log
-#SBATCH --array=1-2920
+#SBATCH --array=1-24
 
-JOBID=hateruma_large
-YEAR=2018
+JOBID=MOSAiC_11
+YEAR=2020
 ALT=10
 echo Beginning FLEXPART v10.4 array job
 echo Array job $SLURM_ARRAY_TASK_ID of OSCA campaign in $YEAR
@@ -68,8 +68,8 @@ RELSTART=$ENDDATE
 RELEND=$ENDDATE
 RELTIMESTART=$ENDTIME
 RELTIMEEND=$ENDTIME
-LLLON=123.75
-LLLAT=24.06
+LLLON=99.40963
+LLLAT=87.51428
 URLON=$LLLON
 URLAT=$LLLAT
 HEIGHT=$ALT
@@ -126,7 +126,5 @@ module load tools/ecCodes/2.7.3-foss-2018b
 echo Write all output as netcdfs
 cd ../../
 python python_scripts/convert_to_netcdf.py $SLURM_ARRAY_TASK_ID $JOBID
-
-rm -rf $JOBID/flex_$JOB
-
+python python_scripts/plot_average.py $JOBID
 echo all done

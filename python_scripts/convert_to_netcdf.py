@@ -94,17 +94,18 @@ def write_netcdf( JOBID, date, dt, lons, lats, alts):
     particles.units = 'Particle number'
     particles[:] = range(1,nparticles+1)
 
-    lats = ncdf_file.createVariable('Latitude',float, ('seconds_since_release','particle'))
-    lats.units = 'Degrees'
-    lats[:] = np.array(lats)
+    latitude = ncdf_file.createVariable('Latitude',float, ('seconds_since_release','particle'))
+    latitude.units = 'Degrees'
+    latitude[:] = np.array(lats)
+    print( lats )
 
-    lons = ncdf_file.createVariable('Longitude',float, ('seconds_since_release','particle')) 
-    lons.units = 'Degrees'
-    lons[:] = np.array(lons)
+    longitude = ncdf_file.createVariable('Longitude',float, ('seconds_since_release','particle')) 
+    longitude.units = 'Degrees'
+    longitude[:] = np.array(lons)
 
-    alts = ncdf_file.createVariable('Altitude',float, ('seconds_since_release','particle')) 
-    alts.units = 'Metres'
-    alts[:] = np.array(alts)
+    altitude = ncdf_file.createVariable('Altitude',float, ('seconds_since_release','particle')) 
+    altitude.units = 'Metres'
+    altitude[:] = np.array(alts)
 
     return ncdf_file.close()
     #return 
@@ -119,9 +120,11 @@ def main():
     date  =  array_dates.iloc[NUMBER,1]
     dt=pd.to_datetime( date, format="%Y%m%d%H%M" )
     lons, lats, alts = read_flexpart_output(JOBID, date)
-
+    
     ### Save output as netcdf file 
     write_netcdf( JOBID, date, dt, lons, lats, alts)
+    ## Clean up the array job
+    os.system( f"rm -rf {JOBID}/flex_{date}" )
 
 if __name__=="__main__":
     main()
