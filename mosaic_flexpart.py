@@ -33,7 +33,7 @@ def setup_flexpart_run( job_id, njobs, start, coords, nparticles):
     return
 
 def write_dates(start, end, job_id, hour_interval=6):
-    cmd = f"python python_scripts/array_dates.py {start} {end} {job_id} {hour_interval}"
+    cmd = f"python python_scripts/array_dates.py '{start}' '{end}' {job_id} {hour_interval}"
     os.system( cmd )
     return
 
@@ -52,10 +52,10 @@ def main():
     df = pd.read_csv('MOSAiC_LatLong.csv', index_col=0)
     
     for n, (i, row) in enumerate(df.iterrows()):
-        if n<=11:
+        if n!=11:
             continue
         # Read dates and lat/lon to run FLEXPART trajectories for MOSAiC - in format "YYYY-MM-DD (end date is inclusive)
-        start_date = pd.to_datetime( i, format='%d/%m/%Y %H:%M').strftime("%Y-%m-%d")
+        start_date = pd.to_datetime( i, format='%d/%m/%Y %H:%M').strftime("%Y-%m-%d %H:%M")
         end_date   = start_date
         frequency  = 1
         njobs      = find_njobs( start_date, end_date, frequency )
@@ -70,8 +70,8 @@ def main():
         
         # Setup config files and submit FLEXPART run
         write_dates(start_date, end_date, job_id, hour_interval=frequency)
-        setup_flexpart_run( job_id, njobs, start_date, coords, n_particles )
-        submit_flexpart_run()
+        #setup_flexpart_run( job_id, njobs, start_date, coords, n_particles )
+        #submit_flexpart_run()
 
 if __name__=="__main__":
     main()
