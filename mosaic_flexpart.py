@@ -52,7 +52,7 @@ def main():
     df = pd.read_csv('MOSAiC_LatLong.csv', index_col=0)
     
     for n, (i, row) in enumerate(df.iterrows()):
-        if n!=10:
+        if n<=11:
             continue
         # Read dates and lat/lon to run FLEXPART trajectories for MOSAiC - in format "YYYY-MM-DD (end date is inclusive)
         start_date = pd.to_datetime( i, format='%d/%m/%Y %H:%M').strftime("%Y-%m-%d")

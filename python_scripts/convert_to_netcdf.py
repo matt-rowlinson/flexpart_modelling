@@ -97,7 +97,6 @@ def write_netcdf( JOBID, date, dt, lons, lats, alts):
     latitude = ncdf_file.createVariable('Latitude',float, ('seconds_since_release','particle'))
     latitude.units = 'Degrees'
     latitude[:] = np.array(lats)
-    print( lats )
 
     longitude = ncdf_file.createVariable('Longitude',float, ('seconds_since_release','particle')) 
     longitude.units = 'Degrees'

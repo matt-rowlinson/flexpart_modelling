@@ -55,7 +55,6 @@ def main():
     frequency  = 1
     njobs      = find_njobs( start_date, end_date, frequency )
     job_id     = 'MOSAiC_2'
-    print( njobs )
     
     # Set coordinates of particles to be released
     lon_of_release = 120.73395

@@ -4,6 +4,7 @@
 *.nc
 *.png
 *.csv
+*.gz
 output/
 Logs/
 array_date*

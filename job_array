@@ -6,7 +6,7 @@
 #SBATCH --output=Logs/array_job_%A_%a.log
 #SBATCH --array=1-24
 
-JOBID=MOSAiC_11
+JOBID=MOSAiC_53
 YEAR=2020
 ALT=10
 echo Beginning FLEXPART v10.4 array job
@@ -20,6 +20,7 @@ if [ ! -d $JOBID ]; then
     mv array_dates_$JOBID $JOBID/
     cd $JOBID
     mkdir netcdfs
+    mkdir plots
 else
     echo Sleeping
     sleep 20s
@@ -68,8 +69,8 @@ RELSTART=$ENDDATE
 RELEND=$ENDDATE
 RELTIMESTART=$ENDTIME
 RELTIMEEND=$ENDTIME
-LLLON=99.40963
-LLLAT=87.51428
+LLLON=18.35213
+LLLAT=83.90798
 URLON=$LLLON
 URLAT=$LLLAT
 HEIGHT=$ALT
